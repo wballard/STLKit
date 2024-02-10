@@ -36,7 +36,6 @@ jobs:
             transform-for-static-hosting /tmp/docbuild/Build/Products/Debug-iphoneos/STLKit.doccarchive \
             --hosting-base-path STLKit \
             --output-path docs;
-          echo "<script>window.location.href += \"/documentation/STLKit\"</script>" > docs/index.html
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:

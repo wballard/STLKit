@@ -31,11 +31,13 @@ jobs:
         run: sudo xcode-select --switch /Applications/Xcode_15.0.app
       - name: Build DocC
         run: |
-          xcodebuild docbuild -scheme STLKit -derivedDataPath /tmp/docbuild -destination 'generic/platform=iOS';
-          $(xcrun --find docc) process-archive \
-            transform-for-static-hosting /tmp/docbuild/Build/Products/Debug-iphoneos/STLKit.doccarchive \
+          swift package \
+            --allow-writing-to-directory ./docs \
+            generate-documentation --target STLKit \
+            --disable-indexing \
+            --transform-for-static-hosting \
             --hosting-base-path STLKit \
-            --output-path docs;
+            --output-path ./docs;
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:

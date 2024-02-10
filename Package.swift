@@ -21,6 +21,8 @@ let package = Package(
         ),
         .testTarget(
             name: "STLKitTests",
-            dependencies: ["STLKit"]),
+            dependencies: ["STLKit"],
+        resources: [
+            .copy("300_polygon_sphere_100mm.STL")]),
     ]
 )

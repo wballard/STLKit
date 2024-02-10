@@ -1,12 +1,17 @@
 import XCTest
+import RealityKit
 @testable import STLKit
 
 final class STLKitTests: XCTestCase {
-    func testExample() throws {
-        // XCTest Documentation
-        // https://developer.apple.com/documentation/xctest
+    func test_stlText() async throws {
+        // given a text style STL file
+        guard let resourceURL = Bundle.module.url(forResource: "300_polygon_sphere_100mm", withExtension: "STL") else {
+            XCTFail();
+            return;
+        }
+        // when it is loaded
+        let model = try? await ModelEntity.loadSTL(contentsOf: resourceURL);
+        XCTAssertNotNil(model);
 
-        // Defining Test Cases and Test Methods
-        // https://developer.apple.com/documentation/xctest/defining_test_cases_and_test_methods
     }
 }

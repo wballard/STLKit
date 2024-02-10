@@ -32,6 +32,7 @@ class STLTextParser {
     var state = STLTextState.start
     var name = ""
     var vertexBuffer = [SIMD3<Float>]()
+    var normalsBuffer = [SIMD3<Float>]()
     var indexBuffer = [UInt32]()
 
     init() throws {
@@ -119,10 +120,9 @@ class STLTextParser {
         case .solid:
             if (try? self.parseEndSolid.firstMatch(in: line)) != nil {
                 self.state = .end
-            } else if (try? self.parseFacet.firstMatch(in: line)) != nil {
-                // we are gonna ignore the normals as RealityKit will
-                // compute them based on the counterclockwise vertexes and
-                // right hand rule
+            } else if let facet = (try? self.parseFacet.firstMatch(in: line)) {
+                // triangle normal -- there will be three
+                self.normalsBuffer.append(SIMD3(facet.output.1, facet.output.2, facet.output.3))
                 self.state = .facet
             } else {
                 throw STLError.invalidSTLFormat(line)
@@ -142,7 +142,7 @@ class STLTextParser {
             } else if (try? self.parseEndLoop.firstMatch(in: line)) != nil {
                 // ordinals for the most recent three triangle vertex
                 guard self.vertexBuffer.count % 3 == 0 else {
-                    throw STLError.invalidSTLFormat("encountered a triangle without three vertex")
+                    throw STLError.invalidSTLFormat("encountered a triangle without three vertices")
                 }
                 self.indexBuffer.append(contentsOf: [
                     UInt32(self.vertexBuffer.count-3),
@@ -162,7 +162,7 @@ class STLTextParser {
 /// Interact with STL files.
 public enum STL {
     /// Loads a single STL file from an URL asynchronously.
-    public static func load(contentsOf: URL, withUnits: STLUnits = STLUnits.meters) async throws -> ModelEntity {
+    public static func load(contentsOf: URL, withUnits: STLUnits = STLUnits.meters, materials: [Material] = []) async throws -> ModelEntity {
         // text mode STL is way more common, so we'll look for that first
         var fileType = STLFileType.unknown
         let textParser = try STLTextParser()
@@ -187,9 +187,9 @@ public enum STL {
         switch fileType {
         case .text:
             var descriptor = MeshDescriptor(name: textParser.name)
-            descriptor.positions = MeshBuffers.Positions(textParser.vertexBuffer)
+            descriptor.positions = MeshBuffers.Positions(textParser.vertexBuffer.map { $0 * withUnits.rawValue })
             descriptor.primitives = .triangles(textParser.indexBuffer)
-            return await ModelEntity(mesh: try .generate(from: [descriptor]))
+            return try await ModelEntity(mesh: .generate(from: [descriptor]), materials: materials)
         case .binary:
             throw STLError.urlNotFound
         case .unknown:

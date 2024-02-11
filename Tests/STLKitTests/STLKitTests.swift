@@ -14,4 +14,15 @@ final class STLKitTests: XCTestCase {
         XCTAssertNotNil(model);
 
     }
+    func test_stlBinary() async throws {
+        // given a text style STL file
+        guard let resourceURL = Bundle.module.url(forResource: "300_polygon_sphere_100mm.bin", withExtension: "STL") else {
+            XCTFail();
+            return;
+        }
+        // when it is loaded
+        let model = try? await ModelEntity.loadSTL(contentsOf: resourceURL);
+        XCTAssertNotNil(model);
+
+    }
 }

@@ -13,14 +13,21 @@ let package = Package(
             targets: ["STLKit"]
         ),
     ],
-    dependencies: [.package(url: "https://github.com/apple/swift-docc-plugin", .upToNextMajor(from: "1.3.0"))],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-docc-plugin", .upToNextMajor(from: "1.3.0")),
+        .package(url: "https://github.com/apple/swift-async-algorithms.git", .upToNextMajor(from: "1.0.0")),
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "STLKit",
+            dependencies: [
+                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
+            ],
             resources: [
                 .copy("300_polygon_sphere_100mm.STL"),
+                .copy("300_polygon_sphere_100mm.bin.STL"),
             ]
         ),
         .testTarget(
@@ -28,6 +35,7 @@ let package = Package(
             dependencies: ["STLKit"],
             resources: [
                 .copy("300_polygon_sphere_100mm.STL"),
+                .copy("300_polygon_sphere_100mm.bin.STL"),
             ]
         ),
     ]

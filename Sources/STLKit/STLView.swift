@@ -1,6 +1,7 @@
 import RealityKit
 import SwiftUI
 
+#if os(visionOS)
 /// An incredibly simple view to test that we can load STL visually
 struct STLView: View {
     let stlAtURL: URL
@@ -22,3 +23,4 @@ struct STLView: View {
 #Preview("A Sphere Binary") {
     STLView(stlAtURL: Bundle.module.url(forResource: "300_polygon_sphere_100mm.bin", withExtension: "STL")!, scale: SIMD3<Float>(0.5, 0.5, 0.5))
 }
+#endif

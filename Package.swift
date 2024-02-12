@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "STLKit",
-    platforms: [.visionOS(.v1), .macOS(.v14)],
+    platforms: [.visionOS(.v1), .macOS(.v14), .iOS(.v17)],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
@@ -15,7 +15,6 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-docc-plugin", .upToNextMajor(from: "1.3.0")),
-        .package(url: "https://github.com/apple/swift-async-algorithms.git", .upToNextMajor(from: "1.0.0")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -23,7 +22,6 @@ let package = Package(
         .target(
             name: "STLKit",
             dependencies: [
-                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms"),
             ],
             resources: [
                 .copy("300_polygon_sphere_100mm.STL"),
